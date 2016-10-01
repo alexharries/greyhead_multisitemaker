@@ -67,13 +67,15 @@ function multisitemaker_connect_db($databasename = '') {
  * Display an error and optionally die when a database error occurs.
  *
  * @param string $message
+ * @param bool   $die
+ * @param string $type
  */
 function multisitemaker_db_error($message = NULL, $die = FALSE, $type = 'normal') {
   if ($type == 'connect') {
-    $message .= '<p>Error ' . mysqli_connect_errno() . ': ' . mysqli_connect_error() . '</p>';
+    $message .= '<p>Something went wrong... ' . mysqli_connect_errno() . ': ' . mysqli_connect_error() . '</p>';
   }
   else {
-    $message .= '<p>Error ' . mysqli_errno(multisitemaker_db()) . ': ' . mysqli_error(multisitemaker_db()) . '</p>';
+    $message .= '<p>Something went wrong... ' . mysqli_errno(multisitemaker_db()) . ': ' . mysqli_error(multisitemaker_db()) . '</p>';
   }
 
   // What error class should we use?
@@ -505,28 +507,36 @@ function multisitemaker_process_new_multisite_form() {
   $domain_name = $subdomain_name . multisitemaker_get_root_domain_name();
   $domain_name_sanitised = multisitemaker_make_alphanumeric($domain_name);
   $new_database = $new_username = multisitemaker_make_alphanumeric($conf['database']['name_prefix'] . $domain_name_sanitised, 16, '');
-  $password = substr(md5($domain_name_sanitised . ':' . $_SERVER['REQUEST_IP'] . ':' . REQUEST_TIME), 0, 20);
+  $password = substr(md5($domain_name_sanitised . ':' . $_SERVER['REMOTE_ADDR'] . ':' . REQUEST_TIME), 0, 20);
 
   // Check that the domain name directory doesn't already exist.
-  if (file_exists('../sites/' . $domain_name)) {
-    multisitemaker_message('<h3>Error</h3>
-      <p>A multisite with the domain name ' . $subdomain_name . ' already exists.</p>', 'danger');
-
-    multisitemaker_exit();
+  if (file_exists('../sites-common/' . $domain_name)) {
+    // If a file exists with the multisite directory's name, throw a fatal
+    // error.
+    if (!is_dir('../sites-common/' . $domain_name)) {
+      multisitemaker_message('<h3>Something went wrong...</h3>
+      <p>A file (not a directory) already exists at ' . dirname(__FILE__) . '../sites-common/' . $domain_name . ' already exists.</p>', 'danger');
+  
+      multisitemaker_exit();
+    }
+    else {
+      // If a directory already exists, carry on, displaying a warning.
+      multisitemaker_message('<h3>Uh-oh...</h3>
+      <p>A multisite with the domain name ' . $domain_name . ' already exists.</p>', 'warning');
+    }
   }
-
-  // Try to create the directory.
-  if (!mkdir('../sites/' . $domain_name, 0777)) {
-    multisitemaker_message('<h3>Error</h3>
-      <p>Unable to create the directory sites/' . $domain_name . '; does this script have write permissions on the sites/ directory?</p>', 'danger');
-
+  // Try to create the directory as it doesn't already exist.
+  elseif (!mkdir('../sites-common/' . $domain_name, 0777)) {
+    multisitemaker_message('<h3>Something went wrong...</h3>
+      <p>Unable to create the directory sites-common/' . $domain_name . '; does this script have write permissions on the sites/ directory?</p>', 'danger');
+    
     multisitemaker_exit();
   }
 
   // Create symlinks now, if required.
   if (!empty($multisitesymlink)) {
-    $destination_root = '../sites/' . $multisitesymlink . '/';
-    $source_root = '../sites/' . $domain_name . '/';
+    $destination_root = '../sites-common/' . $multisitesymlink . '/';
+    $source_root = '../sites-common/' . $domain_name . '/';
 
     $symlinks_to_create = array(
       'modules',
@@ -571,7 +581,7 @@ function multisitemaker_process_new_multisite_form() {
     multisitemaker_exit();
   }
   else {
-    multisitemaker_message('<h3>Error</h3>
+    multisitemaker_message('<h3>Something went wrong...</h3>
       <p>Unable to create the database and/or user.</p>', 'danger');
 
     multisitemaker_exit();
