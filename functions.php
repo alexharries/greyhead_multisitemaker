@@ -305,7 +305,7 @@ function multisitemaker_get_form_validation_fields($form_id) {
   $hidden_fields = array();
 
   $form_id = check_plain($form_id);
-  $form_build_id = md5($form_id . ':' . $_REQUEST['REMOTE_ADDR'] . ':' . REQUEST_TIME);
+  $form_build_id = md5($form_id . ':' . $_SERVER['REMOTE_ADDR'] . ':' . REQUEST_TIME);
 
   $hidden_fields['multisitemaker_form_post'] = 'multisitemaker_form_post';
   $hidden_fields['form_id'] = $form_id;
@@ -630,7 +630,7 @@ function multisitemaker_db($database_connection = NULL) {
     $_SESSION['database_connection'] = $database_connection;
   }
 
-  return $_SESSION['database_connection'];
+  return array_key_exists('database_connection', $_SESSION) ? $_SESSION['database_connection'] : FALSE;
 }
 
 /**
