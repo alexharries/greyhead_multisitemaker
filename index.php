@@ -47,7 +47,7 @@ multisitemaker_connect_db();
  * Debug code.
  */
 if (multisitemaker_debug()) {
-  $output .= '<p>Success: A proper connection to MySQL was made! The MySQL server at ' . $conf['database']['hostname'] . ' was found.</p>';
+  dpm('<p>Success: A proper connection to MySQL was made! The MySQL server at ' . $conf['database']['hostname'] . ' was found.</p>');
   echo '<p>Host information: ' . mysqli_get_host_info(multisitemaker_db()) . '</p>';
 }
 
@@ -59,7 +59,12 @@ if (multisitemaker_debug()) {
   dpm($_SESSION, '$_SESSION');
 }
 
-switch ($_GET['q']) {
+$q = NULL;
+if (isset($_GET['q'])) {
+  $q = $_GET['q'];
+}
+
+switch ($q) {
   case 'createmultisite':
     if (isset($_POST) && !empty($_POST)) {
       if (multisitemaker_validate_post()) {
@@ -70,7 +75,7 @@ switch ($_GET['q']) {
         // Invalid form data received. Show error.
         echo '<h3>Error</h3>
       <p>Sorry, the information you sent appears to be invalid. <a href="/multisitemaker.php">Please click here to try again</a>.';
-
+        
         multisitemaker_access_denied();
       }
     }
@@ -78,11 +83,11 @@ switch ($_GET['q']) {
       multisitemaker_not_found();
     }
     break;
-
+  
   case 'redirecttodrupal':
     multisitemaker_redirecttodrupal();
     break;
-
+  
   default:
     echo multisitemaker_get_multisite_form();
     break;
