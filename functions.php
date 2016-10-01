@@ -211,10 +211,11 @@ function multisitemaker_debug() {
  * Run a database query and return the result.
  *
  * @param            $query_string
- * @param            $query_arguments
- * @param bool|FALSE $debug
+ * @param array      $query_arguments
  *
  * @return bool|\mysqli_result
+ * @internal param bool|FALSE $debug
+ *
  */
 function multisitemaker_db_query($query_string, $query_arguments = array()) {
   // Sanitise the options.
