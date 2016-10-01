@@ -33,24 +33,24 @@ $conf = array(
     // The location where the database server can be reached, e.g. "localhost",
     // 127.0.0.1, or a valid IP address or domain name.
     'hostname' => 'localhost',
-
+    
     // The MySQL server's port. Default is 3306.
     'port' => 3306,
-
+    
     // The database driver. Usually mysql.
     'driver' => 'mysql',
-
+    
     // Database and username prefix: to prefix all database names and usernames
-    // with, e.g. "4com_", set this to "_4com".
+    // with, e.g. "mm_", set this to "mm".
     'name_prefix' => 'mm',
-
+    
     // The database username and password. This user MUST have grant
     // permissions, as they must be able to create new databases and users, and
     // assign permissions.
     'username' => 'username',
     'password' => 'password',
   ),
-
+  
   // Security.
   'security' => array(
     // Whitelisted IP addresses.
@@ -58,11 +58,12 @@ $conf = array(
       // Add the IP addresses here which are allowed to access this service and
       // create new multisites.
       '127.0.0.1',
-      // If you remove the above line, you may not be able to access this script
-      // from your local machine.
+      '::1',
+      // If you remove the above two lines, you may not be able to access this
+      // script from your local machine.
     ),
   ),
-
+  
   // Debug?
   'debug' => FALSE,
 );
