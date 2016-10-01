@@ -677,7 +677,7 @@ function multisitemaker_redirecttodrupal() {
   $redirect_url = multisitemaker_get_protocol() . '://' . $_SERVER['HTTP_HOST'] . '/install.php?';
 
   $redirect_options = array(
-    'profile=greyhead',
+    'profile=greyheadprofile',
     'locale=en',
     'new_database=' . $_GET['new_database'],
     'new_username=' . $_GET['new_username'],
